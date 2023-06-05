@@ -23,6 +23,7 @@ async function run() {
     await client.connect();
 
     const noteCollection = client.db("notesBD").collection("notes");
+    const deleteCollection = client.db("notesBD").collection("deletes");
 
     app.post("/notes", async (req, res) => {
       const note = req.body;
@@ -42,6 +43,16 @@ async function run() {
         },
       };
       const result = await noteCollection.updateOne(filter, updateNote);
+      res.send(result);
+    });
+
+    app.delete("/notes/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const note = await noteCollection.findOne(filter);
+      await deleteCollection.insertOne(note);
+      const result = await noteCollection.deleteOne(filter);
+      res.send(result);
     });
 
     app.get("/notes", async (req, res) => {
