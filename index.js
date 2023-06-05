@@ -22,6 +22,22 @@ async function run() {
   try {
     await client.connect();
 
+    const noteCollection = client.db("notesBD").collection("notes");
+
+    app.post("/notes", async (req, res) => {
+      const note = req.body;
+      const result = await noteCollection.insertOne(note);
+      res.send(result);
+    });
+
+    app.get("/notes", async (req, res) => {
+      const id = req.headers.authorization;
+      const filter = { uid: id };
+      const result = await noteCollection.find(filter).toArray();
+
+      res.send(result);
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log("You successfully connected to MongoDB!");
   } finally {
