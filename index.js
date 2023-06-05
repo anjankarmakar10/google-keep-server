@@ -62,10 +62,33 @@ async function run() {
 
       res.send(result);
     });
+
     app.get("/pins", async (req, res) => {
       const id = req.headers.authorization;
       const filter = { uid: id, pin: true };
       const result = await noteCollection.find(filter).toArray();
+      res.send(result);
+    });
+    app.get("/deletes", async (req, res) => {
+      const id = req.headers.authorization;
+      const filter = { uid: id };
+      const result = await deleteCollection.find(filter).toArray();
+      res.send(result);
+    });
+
+    app.delete("/restore/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const note = await deleteCollection.findOne(filter);
+      await noteCollection.insertOne(note);
+      const result = await deleteCollection.deleteOne(filter);
+      res.send(result);
+    });
+
+    app.delete("/deletes/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await deleteCollection.deleteOne(filter);
       res.send(result);
     });
 
