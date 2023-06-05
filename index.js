@@ -30,6 +30,20 @@ async function run() {
       res.send(result);
     });
 
+    app.patch("/notes/:id", async (req, res) => {
+      const note = req.body;
+      const id = req.params.id;
+
+      const filter = { _id: new ObjectId(id) };
+      const updateNote = {
+        $set: {
+          pin: note.pin,
+          color: note.color,
+        },
+      };
+      const result = await noteCollection.updateOne(filter, updateNote);
+    });
+
     app.get("/notes", async (req, res) => {
       const id = req.headers.authorization;
       const filter = { uid: id };
