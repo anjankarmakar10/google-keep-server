@@ -62,6 +62,12 @@ async function run() {
 
       res.send(result);
     });
+    app.get("/pins", async (req, res) => {
+      const id = req.headers.authorization;
+      const filter = { uid: id, pin: true };
+      const result = await noteCollection.find(filter).toArray();
+      res.send(result);
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log("You successfully connected to MongoDB!");
