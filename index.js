@@ -92,6 +92,23 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/search", async (req, res) => {
+      const value = req.query.query;
+      const id = req.headers.authorization;
+
+      const query = {
+        uid: id,
+        $or: [
+          { note: { $regex: value, $options: "i" } },
+          { title: { $regex: value, $options: "i" } },
+        ],
+      };
+
+      const result = await noteCollection.find(query).toArray();
+
+      res.send(result);
+    });
+
     await client.db("admin").command({ ping: 1 });
     console.log("You successfully connected to MongoDB!");
   } finally {
