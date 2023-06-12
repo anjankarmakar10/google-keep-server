@@ -63,6 +63,22 @@ async function run() {
       res.send(result);
     });
 
+    app.post("/notes/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const note = req.body;
+
+      const update = {
+        $set: {
+          title: note.noteTitle,
+          note: note.noteNote,
+        },
+      };
+
+      const result = await noteCollection.updateOne(filter, update);
+      res.send(result);
+    });
+
     app.get("/pins", async (req, res) => {
       const id = req.headers.authorization;
       const filter = { uid: id, pin: true };
